@@ -285,7 +285,12 @@ int main()
                  dimSet[current]->drawCurrent(color::green);
                }
                break;
-            case '\n':    dimSet[current]->enterHandler(); break;
+            case '\n':{ dimSet[current]->enterHandler(); 
+               int regAdr;
+               regAdr = 4;
+               modbus.tx_rx (MBfunc::Write_Registers_16, addressValue.value, regAdr,
+                          dSet.value);}
+            break;
             case KEY_END: work = false; break; 
             default:dimSet[current]->enterValHandler(key);  break;
          }
@@ -424,11 +429,13 @@ int main()
          }
          modbus.tx_rx (MBfunc::Read_Registers_03, addressValue.value, 4, 5);
          if ( modbus.state == MBstate::doneNoErr ) {
-            PRO1::frequencyLabel.setLabel1 (L"Частота "     + to_wstring(modbus.readBuf[0]));
-            PRO1::ratioLabel    .setLabel1 (L"Коэффициент " + to_wstring(modbus.readBuf[1]) + L"%");
-            PRO1::powerLabel    .setLabel1 (L"Мощность "    + to_wstring(modbus.readBuf[2]));
-            PRO1::voltageLabel  .setLabel1 (L"Напряжение "  + to_wstring(modbus.readBuf[3]));
-            PRO1::currentLabel  .setLabel1 (L"Ток "         + to_wstring(modbus.readBuf[4]));
+            PRO1::frequencyLabel.setLabel1 (L"Частота "      + to_wstring(modbus.readBuf[0]));
+            PRO1::ratioLabel    .setLabel1 (L"Коэффициент "  + to_wstring(modbus.readBuf[1]) + L"/1000");
+            PRO1::powerLabel    .setLabel1 (L"Мощность "     + to_wstring(modbus.readBuf[2])
+                                          + L"  Напряжение " + to_wstring(modbus.readBuf[3])
+                                          + L"  Ток "        + to_wstring(modbus.readBuf[4]));
+            // PRO1::voltageLabel  .setLabel1 (L"Напряжение "    + to_wstring(modbus.readBuf[3]));
+            // PRO1::currentLabel  .setLabel1 (L"Ток "           + to_wstring(modbus.readBuf[4]));
             PRO1::frequencyLabel.draw();
             PRO1::ratioLabel    .draw();
             PRO1::powerLabel    .draw();
